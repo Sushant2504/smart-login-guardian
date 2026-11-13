@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Login Guardian - Enterprise Security Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="shield-icon">🛡️</span>
+                <span class="brand-name">Smart Login Guardian</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="{{ url_for('main.pricing') }}">Pricing</a>
+                <a href="{{ url_for('main.docs') }}">Docs</a>
+                <a href="{{ url_for('auth.login') }}" class="btn-secondary">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn-primary">Start Free Trial</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Protect Your Authentication
+                    <span class="gradient-text">In Real-Time</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Enterprise-grade security platform that detects and prevents login-based attacks using AI-powered threat intelligence and 3D visualization.
+                </p>
+                <div class="hero-cta">
+                    <a href="{{ url_for('auth.register') }}" class="btn-large btn-primary">
+                        Start Free Trial
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="#demo" class="btn-large btn-secondary">
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Threat Detection</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">&lt;50ms</div>
+                        <div class="stat-label">Response Time</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">1M+</div>
+                        <div class="stat-label">Events/Day</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="globe-preview">
+                    <div class="globe-ring"></div>
+                    <div class="globe-ring ring-2"></div>
+                    <div class="globe-ring ring-3"></div>
+                    <div class="globe-core">🌍</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Threat Detection</h2>
+            <p class="section-subtitle">8 Advanced Security Layers Working Together</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔨</div>
+                    <h3>Brute Force Detection</h3>
+                    <p>Automatically identifies and blocks repeated failed login attempts before damage occurs.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔑</div>
+                    <h3>Credential Stuffing</h3>
+                    <p>Detects stolen password databases attacks using behavioral analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✈️</div>
+                    <h3>Impossible Travel</h3>
+                    <p>Flags physically impossible location changes using geo-velocity algorithms.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Geographic Anomalies</h3>
+                    <p>Monitors for unusual login locations and high-risk countries.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Temporal Analysis</h3>
+                    <p>Learns normal login patterns and detects unusual timing.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Device Fingerprinting</h3>
+                    <p>Tracks and identifies new devices for enhanced security.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Account Enumeration</h3>
+                    <p>Prevents attackers from discovering valid usernames.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Threat Intelligence</h3>
+                    <p>Real-time IP reputation and malicious actor database.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Dashboard Section -->
+    <section class="dashboard-preview">
+        <div class="container">
+            <h2 class="section-title">Beautiful 3D Visualization</h2>
+            <p class="section-subtitle">Monitor threats in real-time on an interactive globe</p>
+
+            <div class="dashboard-mockup">
+                <div class="mockup-header">
+                    <div class="mockup-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="mockup-title">Smart Login Guardian Dashboard</div>
+                </div>
+                <div class="mockup-content">
+                    <img src="{{ url_for('static', filename='images/dashboard-preview.png') }}"
+                         alt="3D Dashboard Preview"
+                         onerror="this.style.display='none'">
+                    <div class="mockup-placeholder">
+                        <div class="placeholder-globe">
+                            <div class="spinning-globe">🌐</div>
+                        </div>
+                        <div class="placeholder-stats">
+                            <div class="placeholder-card"></div>
+                            <div class="placeholder-card"></div>
+                            <div class="placeholder-card"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-features">
+                <div class="dash-feature">
+                    <span class="dash-icon">🌍</span>
+                    <span>Interactive 3D Globe</span>
+                </div>
+                <div class="dash-feature">
+                    <span class="dash-icon">⚡</span>
+                    <span>Real-time WebSocket</span>
+                </div>
+                <div class="dash-feature">
+                    <span class="dash-icon">📊</span>
+                    <span>Live Analytics</span>
+                </div>
+                <div class="dash-feature">
+                    <span class="dash-icon">🎯</span>
+                    <span>Attack Simulations</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Integrate</h3>
+                    <p>Add our SDK or API to your authentication system in minutes.</p>
+                    <pre><code>pip install guardian-sdk</code></pre>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Analyze</h3>
+                    <p>Every login is analyzed through 8 security layers in real-time.</p>
+                    <pre><code>guardian.analyze_login(event)</code></pre>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Respond</h3>
+                    <p>Get instant risk scores and actionable recommendations.</p>
+                    <pre><code>if risk.critical: block()</code></pre>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Monitor</h3>
+                    <p>Visualize threats on your 3D dashboard and receive alerts.</p>
+                    <pre><code>dashboard.show()</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Secure Your Platform?</h2>
+            <p>Start your free 14-day trial. No credit card required.</p>
+            <a href="{{ url_for('auth.register') }}" class="btn-large btn-primary">
+                Get Started Free
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <a href="{{ url_for('main.features') }}">Features</a>
+                    <a href="{{ url_for('main.pricing') }}">Pricing</a>
+                    <a href="{{ url_for('main.docs') }}">Documentation</a>
+                    <a href="#">API Reference</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Security</a>
+                    <a href="#">Compliance</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <a href="#">Twitter</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">GitHub</a>
+                    <a href="#">Status</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Smart Login Guardian. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

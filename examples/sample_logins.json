@@ -1,0 +1,124 @@
+[
+  {
+    "username": "alice@example.com",
+    "ip_address": "192.168.1.100",
+    "timestamp": "2026-11-08T09:00:00Z",
+    "success": true,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "location": {
+      "country": "US",
+      "city": "San Francisco",
+      "lat": 37.7749,
+      "lon": -122.4194
+    },
+    "device_fingerprint": "device_abc123"
+  },
+  {
+    "username": "alice@example.com",
+    "ip_address": "192.168.1.100",
+    "timestamp": "2026-11-08T09:15:00Z",
+    "success": false,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "location": {
+      "country": "US",
+      "city": "San Francisco",
+      "lat": 37.7749,
+      "lon": -122.4194
+    },
+    "device_fingerprint": "device_abc123"
+  },
+  {
+    "username": "alice@example.com",
+    "ip_address": "192.168.1.100",
+    "timestamp": "2026-11-08T09:17:00Z",
+    "success": false,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "location": {
+      "country": "US",
+      "city": "San Francisco",
+      "lat": 37.7749,
+      "lon": -122.4194
+    },
+    "device_fingerprint": "device_abc123"
+  },
+  {
+    "username": "alice@example.com",
+    "ip_address": "192.168.1.100",
+    "timestamp": "2026-11-08T09:19:00Z",
+    "success": false,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "location": {
+      "country": "US",
+      "city": "San Francisco",
+      "lat": 37.7749,
+      "lon": -122.4194
+    },
+    "device_fingerprint": "device_abc123"
+  },
+  {
+    "username": "alice@example.com",
+    "ip_address": "203.0.113.50",
+    "timestamp": "2026-11-08T09:25:00Z",
+    "success": true,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "location": {
+      "country": "CN",
+      "city": "Beijing",
+      "lat": 39.9042,
+      "lon": 116.4074
+    },
+    "device_fingerprint": "device_xyz789"
+  },
+  {
+    "username": "bob@example.com",
+    "ip_address": "198.51.100.10",
+    "timestamp": "2026-11-08T10:00:00Z",
+    "success": false,
+    "user_agent": "curl/7.64.1",
+    "location": {
+      "country": "RU",
+      "city": "Moscow",
+      "lat": 55.7558,
+      "lon": 37.6173
+    }
+  },
+  {
+    "username": "charlie@example.com",
+    "ip_address": "198.51.100.10",
+    "timestamp": "2026-11-08T10:01:00Z",
+    "success": false,
+    "user_agent": "curl/7.64.1",
+    "location": {
+      "country": "RU",
+      "city": "Moscow",
+      "lat": 55.7558,
+      "lon": 37.6173
+    }
+  },
+  {
+    "username": "david@example.com",
+    "ip_address": "198.51.100.10",
+    "timestamp": "2026-11-08T10:02:00Z",
+    "success": false,
+    "user_agent": "curl/7.64.1",
+    "location": {
+      "country": "RU",
+      "city": "Moscow",
+      "lat": 55.7558,
+      "lon": 37.6173
+    }
+  },
+  {
+    "username": "eve@example.com",
+    "ip_address": "198.51.100.10",
+    "timestamp": "2026-11-08T10:03:00Z",
+    "success": false,
+    "user_agent": "curl/7.64.1",
+    "location": {
+      "country": "RU",
+      "city": "Moscow",
+      "lat": 55.7558,
+      "lon": 37.6173
+    }
+  }
+]

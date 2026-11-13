@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Login Guardian - 3D Security Dashboard</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="shield-icon">🛡️</span>
+                <h1>SMART LOGIN GUARDIAN</h1>
+            </div>
+            <div class="connection-status">
+                <span class="status-indicator" id="wsStatus"></span>
+                <span id="wsStatusText">Connecting...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Left Panel: 3D Globe -->
+        <div class="panel globe-panel">
+            <div class="panel-header">
+                <h2>🌍 Global Threat Map</h2>
+                <div class="globe-controls">
+                    <button onclick="toggleAutoRotate()" class="btn-control">🔄 Auto-Rotate</button>
+                </div>
+            </div>
+            <div id="globeContainer" class="globe-container"></div>
+            <div class="globe-legend">
+                <div class="legend-item"><span class="dot safe"></span> Safe</div>
+                <div class="legend-item"><span class="dot low"></span> Low Risk</div>
+                <div class="legend-item"><span class="dot medium"></span> Medium Risk</div>
+                <div class="legend-item"><span class="dot high"></span> High Risk</div>
+                <div class="legend-item"><span class="dot critical"></span> Critical</div>
+            </div>
+        </div>
+
+        <!-- Center Panel: Live Feed & Stats -->
+        <div class="center-column">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalLogins">0</div>
+                        <div class="stat-label">Total Logins</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="highRiskCount">0</div>
+                        <div class="stat-label">High Risk</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="criticalCount">0</div>
+                        <div class="stat-label">Critical Alerts</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="successRate">0%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Threat Feed -->
+            <div class="panel feed-panel">
+                <div class="panel-header">
+                    <h2>⚡ Live Threat Feed</h2>
+                    <button onclick="clearFeed()" class="btn-control">Clear</button>
+                </div>
+                <div id="threatFeed" class="threat-feed"></div>
+            </div>
+
+            <!-- Risk Distribution Chart -->
+            <div class="panel chart-panel">
+                <div class="panel-header">
+                    <h2>📈 Risk Distribution</h2>
+                </div>
+                <canvas id="riskChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Right Panel: Controls & Threat Intel -->
+        <div class="right-column">
+            <!-- Attack Simulations -->
+            <div class="panel simulation-panel">
+                <div class="panel-header">
+                    <h2>🎯 Attack Simulations</h2>
+                </div>
+                <div class="simulation-buttons">
+                    <button onclick="simulateAttack('brute_force')" class="btn-simulate">
+                        <span class="btn-icon">🔨</span>
+                        <span class="btn-text">Brute Force</span>
+                    </button>
+                    <button onclick="simulateAttack('credential_stuffing')" class="btn-simulate">
+                        <span class="btn-icon">🔑</span>
+                        <span class="btn-text">Credential Stuffing</span>
+                    </button>
+                    <button onclick="simulateAttack('impossible_travel')" class="btn-simulate">
+                        <span class="btn-icon">✈️</span>
+                        <span class="btn-text">Impossible Travel</span>
+                    </button>
+                    <button onclick="simulateAttack('apt')" class="btn-simulate">
+                        <span class="btn-icon">🎭</span>
+                        <span class="btn-text">APT Attack</span>
+                    </button>
+                    <button onclick="simulateAttack('enumeration')" class="btn-simulate">
+                        <span class="btn-icon">🔍</span>
+                        <span class="btn-text">Enumeration</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Threat Intelligence -->
+            <div class="panel threat-intel-panel">
+                <div class="panel-header">
+                    <h2>🛡️ Threat Intelligence</h2>
+                </div>
+                <div class="threat-intel-content">
+                    <div class="intel-stat">
+                        <span class="intel-label">Malicious IPs:</span>
+                        <span class="intel-value" id="maliciousIPs">0</span>
+                    </div>
+                    <div class="intel-stat">
+                        <span class="intel-label">Recent Reports:</span>
+                        <span class="intel-value" id="recentReports">0</span>
+                    </div>
+                    <div class="intel-stat">
+                        <span class="intel-label">Reputation DB:</span>
+                        <span class="intel-value" id="reputationDB">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="panel alerts-panel">
+                <div class="panel-header">
+                    <h2>🚨 Recent Alerts</h2>
+                </div>
+                <div id="alertsList" class="alerts-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/globe-enhanced.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+</html>
