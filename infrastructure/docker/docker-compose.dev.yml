@@ -1,0 +1,204 @@
+version: '3.9'
+
+services:
+  # =====================================================
+  # PostgreSQL - Primary Database
+  # =====================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: slg-postgres
+    environment:
+      POSTGRES_DB: smart_login_guardian
+      POSTGRES_USER: slg_user
+      POSTGRES_PASSWORD: slg_password_dev_only
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../database/schemas:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U slg_user -d smart_login_guardian"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - slg-network
+
+  # =====================================================
+  # Redis - Cache & Rate Limiting
+  # =====================================================
+  redis:
+    image: redis:7-alpine
+    container_name: slg-redis
+    command: redis-server --appendonly yes --requirepass slg_redis_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - slg-network
+
+  # =====================================================
+  # Redpanda - Kafka Alternative (Lighter, Faster)
+  # =====================================================
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v23.2.18
+    container_name: slg-redpanda
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --smp 1
+      - --memory 1G
+      - --mode dev-container
+      - --default-log-level=info
+    ports:
+      - "18081:18081" # Schema Registry
+      - "18082:18082" # Pandaproxy
+      - "19092:19092" # Kafka API
+      - "19644:9644"  # Admin API
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - slg-network
+
+  # Redpanda Console - Web UI for Kafka
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v2.3.8
+    container_name: slg-redpanda-console
+    depends_on:
+      - redpanda
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      KAFKA_SCHEMAREGISTRY_ENABLED: true
+      KAFKA_SCHEMAREGISTRY_URLS: http://redpanda:8081
+    ports:
+      - "8080:8080"
+    networks:
+      - slg-network
+
+  # =====================================================
+  # ClickHouse - Analytics Database
+  # =====================================================
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.11-alpine
+    container_name: slg-clickhouse
+    environment:
+      CLICKHOUSE_DB: smart_login_guardian_analytics
+      CLICKHOUSE_USER: slg_analytics
+      CLICKHOUSE_PASSWORD: slg_analytics_password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8123:8123" # HTTP API
+      - "9000:9000"  # Native protocol
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+      - ../../database/schemas/clickhouse_init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - slg-network
+
+  # =====================================================
+  # Prometheus - Metrics Collection
+  # =====================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: slg-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - slg-network
+
+  # =====================================================
+  # Grafana - Metrics Visualization
+  # =====================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: slg-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: false
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - slg-network
+
+  # =====================================================
+  # Mailhog - Email Testing (Development Only)
+  # =====================================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: slg-mailhog
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    networks:
+      - slg-network
+
+# =====================================================
+# Volumes
+# =====================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  redpanda_data:
+    driver: local
+  clickhouse_data:
+    driver: local
+  clickhouse_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# =====================================================
+# Networks
+# =====================================================
+networks:
+  slg-network:
+    driver: bridge
+    name: smart-login-guardian-network
