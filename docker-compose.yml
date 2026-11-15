@@ -2,57 +2,83 @@ version: '3.8'
 
 services:
   # PostgreSQL Database
-  db:
+  postgres:
     image: postgres:15-alpine
-    container_name: guardian-db
+    container_name: smart_guardian_db
     environment:
-      POSTGRES_DB: guardian
-      POSTGRES_USER: guardian
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smart_login_guardian
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U guardian"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis (for rate limiting and caching)
+  # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: guardian-redis
+    container_name: smart_guardian_redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
-      timeout: 3s
+      timeout: 5s
       retries: 5
 
-  # Smart Login Guardian Application
-  app:
-    build: .
-    container_name: guardian-app
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: smart_guardian_backend
+    env_file:
+      - ./backend/.env
     environment:
-      FLASK_ENV: production
-      DATABASE_URL: postgresql://guardian:${DB_PASSWORD:-changeme}@db:5432/guardian
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/smart_login_guardian
       REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${SECRET_KEY:-please-change-this-secret-key}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-please-change-this-jwt-secret}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
     ports:
-      - "5000:5000"
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./models:/app/models
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./web/database:/app/web/database
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
+
+  # Frontend (React) - Uncomment when ready
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: smart_guardian_frontend
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - VITE_API_URL=http://localhost:8000
+  #   depends_on:
+  #     - backend
+  #   command: npm run dev
 
 volumes:
   postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: smart_guardian_network
