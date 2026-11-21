@@ -4,12 +4,22 @@ Smart Login Guardian - Production FastAPI Application
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from datetime import datetime
+import time
+import uuid
 
 from app.config import settings
 from app.database import init_db, close_db
 from app.core import setup_logging, get_logger, AppException
+from app.middleware import (
+    RequestLoggingMiddleware,
+    RateLimitMiddleware,
+    MetricsMiddleware,
+    SecurityHeadersMiddleware
+)
 
 # Setup logging
 setup_logging()
@@ -51,6 +61,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Enterprise middleware stack
+app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses > 1KB
+app.add_middleware(SecurityHeadersMiddleware)  # Security headers
+app.add_middleware(MetricsMiddleware)  # Prometheus metrics
+app.add_middleware(RequestLoggingMiddleware)  # Structured logging
+
+# Trust only specific hosts in production
+if settings.is_production:
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=settings.CORS_ORIGINS + ["localhost", "127.0.0.1"]
+    )
 
 
 # Exception handlers
@@ -97,14 +120,10 @@ async def root():
     }
 
 
-# TODO: Import and include routers
-# from app.api.v1 import auth, events, alerts, users, ml, reports
-# app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
-# app.include_router(events.router, prefix=f"{settings.API_V1_PREFIX}/events", tags=["Events"])
-# app.include_router(alerts.router, prefix=f"{settings.API_V1_PREFIX}/alerts", tags=["Alerts"])
-# app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["Users"])
-# app.include_router(ml.router, prefix=f"{settings.API_V1_PREFIX}/ml", tags=["Machine Learning"])
-# app.include_router(reports.router, prefix=f"{settings.API_V1_PREFIX}/reports", tags=["Reports"])
+# Import and include API routers
+from app.api.v1 import api_router
+
+app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
 
 if __name__ == "__main__":

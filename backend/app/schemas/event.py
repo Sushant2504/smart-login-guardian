@@ -49,6 +49,44 @@ class Event(EventInDB):
 
 class EventWithAlert(Event):
     """Event with related alert"""
+    alert: Optional[dict] = None
+
+
+class EventResponse(Event):
+    """Event API response"""
+    pass
+
+
+class EventUpdate(BaseSchema):
+    """Event update schema"""
+    status: Optional[EventStatus] = None
+    risk_score: Optional[int] = None
+
+
+class EventFilter(BaseSchema):
+    """Event filter parameters"""
+    status: Optional[str] = None
+    risk_level: Optional[str] = None
+    user_identifier: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+
+
+class EventListResponse(BaseSchema):
+    """Event list response"""
+    events: List[Event]
+    total: int
+    skip: int
+    limit: int
+
+
+class EventStatsResponse(BaseSchema):
+    """Event statistics response"""
+    total_events: int = 0
+    success_events: int = 0
+    failed_events: int = 0
+    high_risk_events: int = 0
+    """Event with related alert"""
     alert: Optional["AlertInDB"] = None
 
 

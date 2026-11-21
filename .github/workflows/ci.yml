@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Enterprise CI Pipeline
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 env:
   PYTHON_VERSION: '3.11'
-  POETRY_VERSION: '1.7.0'
+  NODE_VERSION: '18'
 
 jobs:
   test:
@@ -121,3 +121,42 @@ jobs:
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: 'trivy-results.sarif'
+
+    - name: Check dependencies for vulnerabilities
+      run: |
+        pip install safety
+        safety check --file requirements.txt --json || true
+
+    - name: Run bandit security scanner
+      run: |
+        pip install bandit
+        bandit -r . -f json -o bandit-report.json || true
+
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install quality tools
+      run: |
+        pip install black isort ruff mypy
+
+    - name: Check formatting
+      run: |
+        black --check .
+        isort --check-only .
+
+    - name: Lint with ruff
+      run: |
+        ruff check .
+
+    - name: Type check
+      run: |
+        mypy . --ignore-missing-imports || true

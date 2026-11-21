@@ -44,3 +44,23 @@ class AlertInDB(AlertBase):
 class Alert(AlertInDB):
     """Public alert schema"""
     pass
+
+
+class AlertResponse(Alert):
+    """Alert API response"""
+    pass
+
+
+class AlertFilter(BaseSchema):
+    """Alert filter parameters"""
+    severity: Optional[str] = None
+    status: Optional[str] = None
+    assigned_to: Optional[UUID] = None
+
+
+class AlertListResponse(BaseSchema):
+    """Alert list response"""
+    alerts: List[Alert]
+    total: int
+    skip: int
+    limit: int

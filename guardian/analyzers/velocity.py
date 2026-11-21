@@ -1,4 +1,3 @@
-from typing import List, Optional
 from math import radians, sin, cos, sqrt, atan2
 from datetime import timedelta
 from ..models import LoginAttempt, RiskSignal, SignalType

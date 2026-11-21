@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+LABEL maintainer="Smart Login Guardian"
+LABEL description="Demo server for Smart Login Guardian"
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements-demo.txt .
+RUN pip install --no-cache-dir -r requirements-demo.txt
+
+# Copy demo server
+COPY demo_enterprise.py .
+
+# Expose port
+EXPOSE 8000
+
+# Run demo server
+CMD ["python3", "demo_enterprise.py"]

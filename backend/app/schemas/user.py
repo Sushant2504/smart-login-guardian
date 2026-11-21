@@ -47,3 +47,16 @@ class User(UserInDB):
 class UserWithPassword(UserInDB):
     """User schema with password hash (internal use)"""
     password_hash: str
+
+
+class UserResponse(User):
+    """User API response"""
+    pass
+
+
+class UserListResponse(BaseSchema):
+    """User list response"""
+    users: List[User]
+    total: int
+    skip: int
+    limit: int
