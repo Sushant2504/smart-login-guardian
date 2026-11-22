@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Login Guardian - Security Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 60px 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-logo {
+            text-align: center;
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .login-title {
+            text-align: center;
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .demo-hint {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .demo-hint strong {
+            color: #667eea;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        /* Header */
+        .header {
+            background: #1e293b;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            font-size: 36px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 36px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .stat-change.up {
+            background: #ef4444;
+            color: white;
+        }
+
+        .stat-change.down {
+            background: #10b981;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-refresh {
+            padding: 8px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: #2563eb;
+        }
+
+        /* Events List */
+        .event-item {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .event-item.high-risk {
+            border-left-color: #ef4444;
+        }
+
+        .event-item.medium-risk {
+            border-left-color: #f59e0b;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .event-user {
+            font-weight: 600;
+            color: white;
+            font-size: 14px;
+        }
+
+        .risk-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .risk-badge.critical {
+            background: #ef4444;
+            color: white;
+        }
+
+        .risk-badge.high {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .risk-badge.medium {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .risk-badge.low {
+            background: #10b981;
+            color: white;
+        }
+
+        .event-details {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .event-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .threat-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .threat-tag {
+            background: #ef4444;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+        }
+
+        /* Alerts */
+        .alert-item {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-item.acknowledged {
+            border-left-color: #f59e0b;
+            opacity: 0.7;
+        }
+
+        .alert-item.resolved {
+            border-left-color: #10b981;
+            opacity: 0.5;
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: white;
+            font-size: 15px;
+        }
+
+        .alert-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .alert-status.open {
+            background: #ef4444;
+            color: white;
+        }
+
+        .alert-status.acknowledged {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .alert-status.resolved {
+            background: #10b981;
+            color: white;
+        }
+
+        .alert-description {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-small:hover {
+            opacity: 0.8;
+        }
+
+        .btn-acknowledge {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-resolve {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Create Event Form */
+        .create-event-form {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-input-dark {
+            padding: 10px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-input-dark:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-select {
+            padding: 10px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-create {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Threat Map Placeholder */
+        .threat-map {
+            height: 300px;
+            background: #0f172a;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <div class="login-logo">🛡️</div>
+            <h1 class="login-title">Smart Login Guardian</h1>
+            <p class="login-subtitle">Enterprise Identity Threat Detection</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginBtn">
+                    Sign In to Dashboard
+                </button>
+            </form>
+
+            <div class="demo-hint">
+                <strong>Demo Credentials:</strong><br>
+                Email: admin@example.com<br>
+                Password: Admin123!
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-logo">🛡️</div>
+                    <div>
+                        <div class="header-title">Smart Login Guardian</div>
+                        <div class="header-subtitle">Security Operations Center</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin User</div>
+                        <div class="user-role" id="userRole">Administrator</div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-change up">Live</div>
+                    </div>
+                    <div class="stat-value" id="totalEvents">-</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-change up" id="alertChange">+2</div>
+                    </div>
+                    <div class="stat-value" id="totalAlerts">-</div>
+                    <div class="stat-label">Active Alerts</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-change up" id="threatChange">+1</div>
+                    </div>
+                    <div class="stat-value" id="highRiskEvents">-</div>
+                    <div class="stat-label">High Risk Events</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-change down">↓12%</div>
+                    </div>
+                    <div class="stat-value" id="successRate">-</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Recent Events -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>📋</span>
+                            Recent Login Events
+                        </div>
+                        <button class="btn-refresh" onclick="loadEvents()">Refresh</button>
+                    </div>
+                    <div id="eventsContainer">
+                        <div class="loading">Loading events...</div>
+                    </div>
+                </div>
+
+                <!-- Active Alerts -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>🚨</span>
+                            Security Alerts
+                        </div>
+                        <button class="btn-refresh" onclick="loadAlerts()">Refresh</button>
+                    </div>
+                    <div id="alertsContainer">
+                        <div class="loading">Loading alerts...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Event & Threat Map -->
+            <div class="content-grid">
+                <!-- Create Event -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>➕</span>
+                            Simulate Login Event
+                        </div>
+                    </div>
+                    <div class="create-event-form">
+                        <div class="form-row">
+                            <input type="text" id="eventUser" class="form-input-dark" placeholder="User Email" value="test@company.com">
+                            <input type="text" id="eventIP" class="form-input-dark" placeholder="IP Address" value="185.220.101.99">
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="eventCountry" class="form-input-dark" placeholder="Country" value="Russia">
+                            <input type="text" id="eventCity" class="form-input-dark" placeholder="City" value="Moscow">
+                        </div>
+                        <div class="form-row">
+                            <select id="eventStatus" class="form-select">
+                                <option value="success">Success</option>
+                                <option value="failed" selected>Failed</option>
+                                <option value="blocked">Blocked</option>
+                            </select>
+                            <input type="text" id="eventUserAgent" class="form-input-dark" placeholder="User Agent (optional)">
+                        </div>
+                        <button class="btn-create" onclick="createEvent()">
+                            🚀 Create Event & Analyze
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Geographic Threats -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>🌍</span>
+                            Geographic Threat Distribution
+                        </div>
+                    </div>
+                    <div class="threat-map">
+                        <div id="geoData" style="color: #94a3b8; padding: 20px;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">🗺️</div>
+                            <div style="font-size: 16px;">Loading geographic data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toastIcon">✓</span>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api/v1';
+        let authToken = null;
+        let currentUser = null;
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) throw new Error('Login failed');
+
+                const data = await response.json();
+                authToken = data.access_token;
+                currentUser = data.user;
+
+                // Show dashboard
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                document.getElementById('userName').textContent = currentUser.full_name;
+                document.getElementById('userRole').textContent = currentUser.role;
+
+                // Load dashboard data
+                loadDashboard();
+                showToast('Welcome back! Dashboard loaded successfully.', 'success');
+            } catch (error) {
+                showToast('Login failed. Please check your credentials.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Sign In to Dashboard';
+            }
+        });
+
+        // Logout
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            showToast('Logged out successfully', 'success');
+        }
+
+        // Load Dashboard
+        async function loadDashboard() {
+            await Promise.all([
+                loadMetrics(),
+                loadEvents(),
+                loadAlerts(),
+                loadGeoData()
+            ]);
+        }
+
+        // Load Metrics
+        async function loadMetrics() {
+            try {
+                const response = await fetch(`${API_URL}/reports/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+
+                document.getElementById('totalEvents').textContent = data.total_events;
+                document.getElementById('totalAlerts').textContent = data.active_threats;
+                document.getElementById('highRiskEvents').textContent = data.high_risk_events;
+                document.getElementById('successRate').textContent = data.success_rate.toFixed(1) + '%';
+            } catch (error) {
+                console.error('Failed to load metrics:', error);
+            }
+        }
+
+        // Load Events
+        async function loadEvents() {
+            const container = document.getElementById('eventsContainer');
+            container.innerHTML = '<div class="loading">Loading events...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/events?limit=5`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const events = await response.json();
+
+                if (events.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <div>No events yet</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = events.map(event => `
+                    <div class="event-item ${event.risk_level === 'high' || event.risk_level === 'critical' ? 'high-risk' : event.risk_level === 'medium' ? 'medium-risk' : ''}">
+                        <div class="event-header">
+                            <div class="event-user">${event.user_identifier}</div>
+                            <div class="risk-badge ${event.risk_level}">${event.risk_level.toUpperCase()} (${event.risk_score})</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail">
+                                <span>🌍</span>
+                                <span>${event.city}, ${event.country}</span>
+                            </div>
+                            <div class="event-detail">
+                                <span>🔌</span>
+                                <span>${event.ip_address}</span>
+                            </div>
+                            <div class="event-detail">
+                                <span>📅</span>
+                                <span>${new Date(event.timestamp).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        ${event.threats_detected.length > 0 ? `
+                            <div class="threat-tags">
+                                ${event.threats_detected.map(threat => `<span class="threat-tag">⚠️ ${threat}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">Failed to load events</div>';
+                console.error('Failed to load events:', error);
+            }
+        }
+
+        // Load Alerts
+        async function loadAlerts() {
+            const container = document.getElementById('alertsContainer');
+            container.innerHTML = '<div class="loading">Loading alerts...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/alerts?limit=5`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const alerts = await response.json();
+
+                if (alerts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">✅</div>
+                            <div>No active alerts - All clear!</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = alerts.map(alert => `
+                    <div class="alert-item ${alert.status}">
+                        <div class="alert-header">
+                            <div class="alert-title">${alert.title}</div>
+                            <div class="alert-status ${alert.status}">${alert.status}</div>
+                        </div>
+                        <div class="alert-description">${alert.description}</div>
+                        ${alert.status === 'open' ? `
+                            <div class="alert-actions">
+                                <button class="btn-small btn-acknowledge" onclick="acknowledgeAlert('${alert.id}')">
+                                    ✓ Acknowledge
+                                </button>
+                                <button class="btn-small btn-resolve" onclick="resolveAlert('${alert.id}')">
+                                    ✓ Resolve
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">Failed to load alerts</div>';
+                console.error('Failed to load alerts:', error);
+            }
+        }
+
+        // Load Geographic Data
+        async function loadGeoData() {
+            try {
+                const response = await fetch(`${API_URL}/reports/geo`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+
+                const container = document.getElementById('geoData');
+                const countries = Object.entries(data.countries)
+                    .sort((a, b) => b[1].suspicious - a[1].suspicious)
+                    .slice(0, 5);
+
+                container.innerHTML = `
+                    <div style="width: 100%; text-align: left;">
+                        <div style="font-weight: 600; margin-bottom: 15px; color: white;">Top Threat Origins</div>
+                        ${countries.map(([country, stats]) => `
+                            <div style="margin-bottom: 10px; padding: 10px; background: #1e293b; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: white;">${country}</span>
+                                    <span style="color: #ef4444; font-weight: 600;">${stats.suspicious} threats</span>
+                                </div>
+                                <div style="font-size: 12px; color: #94a3b8; margin-top: 5px;">
+                                    Total: ${stats.total} | Blocked: ${stats.blocked}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Failed to load geo data:', error);
+            }
+        }
+
+        // Create Event
+        async function createEvent() {
+            const eventData = {
+                user_identifier: document.getElementById('eventUser').value,
+                ip_address: document.getElementById('eventIP').value,
+                country: document.getElementById('eventCountry').value,
+                city: document.getElementById('eventCity').value,
+                status: document.getElementById('eventStatus').value,
+                user_agent: document.getElementById('eventUserAgent').value || null
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast(`Event created! Risk Score: ${result.risk_score} (${result.risk_level})`, 'success');
+                    loadDashboard();
+                } else {
+                    showToast('Failed to create event', 'error');
+                }
+            } catch (error) {
+                showToast('Error creating event', 'error');
+                console.error('Failed to create event:', error);
+            }
+        }
+
+        // Acknowledge Alert
+        async function acknowledgeAlert(alertId) {
+            try {
+                const response = await fetch(`${API_URL}/alerts/${alertId}/acknowledge`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    showToast('Alert acknowledged', 'success');
+                    loadAlerts();
+                    loadMetrics();
+                }
+            } catch (error) {
+                showToast('Failed to acknowledge alert', 'error');
+            }
+        }
+
+        // Resolve Alert
+        async function resolveAlert(alertId) {
+            try {
+                const response = await fetch(`${API_URL}/alerts/${alertId}/resolve`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    showToast('Alert resolved', 'success');
+                    loadAlerts();
+                    loadMetrics();
+                }
+            } catch (error) {
+                showToast('Failed to resolve alert', 'error');
+            }
+        }
+
+        // Show Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+
+            icon.textContent = type === 'success' ? '✓' : '✗';
+            msg.textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (authToken) {
+                loadMetrics();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
